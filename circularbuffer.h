@@ -1,35 +1,36 @@
+#pragma once
 #include <list>
 #include <string>
 #include <utility>
 
-template <class T>
+typedef char value_type;
 class CircularBuffer final {
 private:
-    T* buffer_;
+    value_type* buffer_;
     int head_{};
     int tail_{};
     int capacity_{};
     int size_{};
 public:
-    CircularBuffer() = default;
+    CircularBuffer() : buffer_(nullptr), head_(0), tail_(0), capacity_(0), size_(0) {};
     ~CircularBuffer();
-    CircularBuffer(const CircularBuffer<T>& cb);
+    CircularBuffer(const CircularBuffer& cb);
 
     explicit CircularBuffer(int capacity);
-    CircularBuffer(int capacity, const T& elem);
+    CircularBuffer(int capacity, const value_type& elem);
 
-    T& operator[](int i);
-    const T& operator[](int i) const;
+    value_type& operator[](int i);
+    const value_type& operator[](int i) const;
 
-    T& at(int i);
-    const T& at(int i) const;
+    value_type& at(int i);
+    [[nodiscard]] const value_type& at(int i) const;
 
-    T& front();
-    T& back();
-    const T& front() const;
-    const T& back() const;
+    value_type& front();
+    value_type& back();
+    [[nodiscard]] const value_type& front() const;
+    [[nodiscard]] const value_type& back() const;
 
-    T* linearize();
+    value_type* linearize();
     [[nodiscard]] bool is_linearized() const;
     void rotate(int new_begin);
     [[nodiscard]] int size() const;
@@ -39,38 +40,23 @@ public:
     [[nodiscard]] int capacity() const;
 
     void set_capacity(int new_capacity);
-    void resize(int new_size, const T& item = T());
+    void resize(int new_size, const value_type& item = value_type());
     CircularBuffer& operator=(const CircularBuffer& cb) ;
     void swap(CircularBuffer& cb);
 
-    void push_back(const T& item = T());
-    void push_front(const T& item = T());
+    void push_back(const value_type& item = value_type());
+    void push_front(const value_type& item = value_type());
     void pop_back();
     void pop_front();
 
-    void insert(int pos, const T & item = T());
+    void insert(int pos, const value_type & item = value_type());
     void erase(int first, int last);
     void clear();
 };
 
-template <class T>
-bool operator==(const CircularBuffer<T>& a, const CircularBuffer<T>& b) {
-    if (a.size() != b.size()) {
-        return false;
-    }
-    for (int i = 0; i < a.size(); ++i) {
-        if (a[i] != b[i]) {
-            return false;
-        }
-    }
-    return true;
-}
+bool operator==(const CircularBuffer& a, const CircularBuffer& b);
 
-template <class T>
-bool operator!=(const CircularBuffer<T>& a, const CircularBuffer<T>& b) {
-    return !(a == b);
-}
-
+bool operator!=(const CircularBuffer& a, const CircularBuffer& b);
 
 class CircularBufferError: public std::exception {
 public:
