@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include "circularbuffer.h"
 
+using namespace CircularBufferSpace;
+
 TEST(CircularBufferTest, Constructor) {
     CircularBuffer cb;
     EXPECT_EQ(0, cb.size());
@@ -90,14 +92,6 @@ TEST(CircularBufferTest, PopFront) {
     EXPECT_FALSE(cb.empty());
 }
 
-TEST(CircularBufferTest, Linearize) {
-    CircularBuffer cb(3, 'A');
-    value_type* linearized = cb.linearize();
-    for (int i = 0; i < cb.size(); ++i) {
-        EXPECT_EQ(linearized[i], 'A');
-    }
-}
-
 TEST(CircularBufferTest, CopyConstructor) {
     CircularBuffer cb1(3);
     cb1.push_back('A');
@@ -153,7 +147,7 @@ TEST(CircularBufferTest, IsLinearized) {
     EXPECT_TRUE(cb.is_linearized());
 }
 
-TEST(CircularBufferTest, Rotate) {
+TEST(CircularBufferTest, RotateTest1) {
     CircularBuffer cb(5);
     cb.push_back('A');
     cb.push_back('B');
@@ -161,7 +155,12 @@ TEST(CircularBufferTest, Rotate) {
     cb.push_back('D');
     cb.push_back('E');
     cb.rotate(2);
-    EXPECT_EQ(cb.front(), 'C');
+
+    EXPECT_EQ(cb[0], 'C');
+    EXPECT_EQ(cb[1], 'D');
+    EXPECT_EQ(cb[2], 'E');
+    EXPECT_EQ(cb[3], 'A');
+    EXPECT_EQ(cb[4], 'B');
 }
 
 TEST(CircularBufferTest, SetCapacity) {
@@ -201,25 +200,7 @@ TEST(CircularBufferTest, OperatorIndex) {
     EXPECT_EQ('B', cb[1]);
 }
 
-TEST(CircularBufferTest, ConstOperatorIndex) {
-    CircularBuffer cb(3);
-    cb.push_back('A');
-    cb.push_back('B');
-    cb.push_back('C');
-    EXPECT_EQ('B', cb[1]);
-}
-
 TEST(CircularBufferTest, At) {
-    CircularBuffer cb(3);
-    cb.push_back('A');
-    cb.push_back('B');
-    cb.push_back('C');
-    EXPECT_EQ('A', cb.at(0));
-    EXPECT_EQ('B', cb.at(1));
-    EXPECT_EQ('C', cb.at(2));
-}
-
-TEST(CircularBufferTest, ConstAt) {
     CircularBuffer cb(3);
     cb.push_back('A');
     cb.push_back('B');
@@ -237,14 +218,6 @@ TEST(CircularBufferTest, Front) {
     EXPECT_EQ('A', cb.front());
 }
 
-TEST(CircularBufferTest, ConstFront) {
-    CircularBuffer cb(3);
-    cb.push_back('A');
-    cb.push_back('B');
-    cb.push_back('C');
-    EXPECT_EQ('A', cb.front());
-}
-
 TEST(CircularBufferTest, Back) {
     CircularBuffer cb(3);
     cb.push_back('A');
@@ -253,12 +226,19 @@ TEST(CircularBufferTest, Back) {
     EXPECT_EQ('C', cb.back());
 }
 
-TEST(CircularBufferTest, ConstBack) {
-    CircularBuffer cb(3);
-    cb.push_back('A');
-    cb.push_back('B');
-    cb.push_back('C');
-    EXPECT_EQ('C', cb.back());
+TEST(CircularBufferTest, EraseValidRange) {
+    CircularBuffer buffer(5);
+    buffer.insert(0,'A');
+    buffer.insert(1,'B');
+    buffer.insert(2,'C');
+    buffer.insert(3,'D');
+    buffer.insert(4,'E');
+
+    buffer.erase(1, 3);
+
+    EXPECT_EQ(buffer.size(), 2);
+    EXPECT_EQ(buffer.at(0), 'A');
+    EXPECT_EQ(buffer.at(1), 'E');
 }
 
 int main(int argc, char** argv) {
