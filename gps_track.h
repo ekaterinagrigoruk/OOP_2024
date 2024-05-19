@@ -2,10 +2,11 @@
 #include <map>
 #include "parser.h"
 #include "geo_point.h"
+#include "histogram.h"
 
 class GPS_track final {
 public:
-    explicit GPS_track(std::vector<GeoPoint>& points);
+    explicit GPS_track(const std::vector<GeoPoint>& points, double accuracy = 1e-7);
     [[nodiscard]] time_t get_duration() const {
         return (end_time - start_time);
     }
@@ -39,10 +40,13 @@ public:
     [[nodiscard]] double get_total_descent() const {
         return total_descent;
     }
-    void print_track(std::ostream &stream) const;
+    const Histogram& get_histogram() const {
+        return speed_histogram;
+    }
 
 private:
-    std::vector<std::pair<double, double>> speed_by_time;
+    std::vector<GeoPoint> geo_points;
+    Histogram speed_histogram;
 
     time_t start_time = 0, end_time = 0, movement_time = 0, stop_time = 0;
     double all_distance = 0;
@@ -51,4 +55,6 @@ private:
     double total_climb = 0, total_descent = 0;
 
 };
+
+std::ostream& operator<<(std::ostream& os, const GPS_track& track);
 
