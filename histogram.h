@@ -1,21 +1,37 @@
 #pragma once
-#include <map>
+#include <unordered_map>
 #include <vector>
 #include <string>
+#include <iterator>
+#include <functional>
+
+class HashFunction final{
+public:
+    std::size_t operator()(const std::string& s) const {
+        std::size_t h = 0;
+        for (char c : s) {
+            h = h * 31 + c;
+        }
+        return h;
+    }
+};
 
 class Histogram final {
 public:
-    explicit Histogram(const std::vector<std::pair<double, double>>& book) {
-        for (const auto& element : book) {
-            add_element(element);
-        }
+    Histogram() = default;
+    void add_element(const std::pair<double, double>& element);
+
+    using iterator = std::unordered_map<std::string, double>::const_iterator;
+
+    iterator begin() const {
+        return vocabulary.begin();
     }
-    [[nodiscard]] std::map<const std::string, double> get_histogram() const{
-        return vocabulary;
+
+    iterator end() const {
+        return vocabulary.end();
     }
 
 private:
-    std::map<const std::string, double> vocabulary;
-    void add_element(const std::pair<double, double>& element);
-    static std::string get_range(const double& speed);
+    std::unordered_map<const std::string, double, HashFunction> vocabulary;
+    static std::string get_range(double speed);
 };
