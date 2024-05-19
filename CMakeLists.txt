@@ -23,6 +23,7 @@ add_executable(GPS_track main.cpp
         parser_tests.cpp
         histogram_tests.cpp
         gps_track_tests.cpp
+        geo_constants.h
 )
 
 target_include_directories(pugixml PUBLIC
