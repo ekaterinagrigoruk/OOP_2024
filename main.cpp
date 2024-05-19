@@ -10,8 +10,7 @@ int main() {
         GPS_track example(points);
 
         std::ofstream result("output.txt");
-
-        example.print_track(result);
+        result << example;
     }
     catch (const std::exception& ex) {
         std::cerr << "Error: " << ex.what() << std::endl;
